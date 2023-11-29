@@ -271,11 +271,10 @@ public class Scheduler {
             } else {
                 currentCaregiver.searchCaregiverSchedule(d);
             }
-            System.out.println("Caregiver Schedule Showed!");
         } catch (IllegalArgumentException e) {
-            System.out.println("Please enter a valid date!");
+            System.out.println("Please try again!");
         } catch (SQLException e) {
-            System.out.println("Error occurred when searching caregiver schedule");
+            System.out.println("Please try again!");
             e.printStackTrace();
         }
     }

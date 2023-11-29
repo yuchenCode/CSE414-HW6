@@ -40,7 +40,7 @@ public class Patient {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();
 
-        String addPatient = "INSERT INTO Patients VALUES (? , ?, ?)";
+        String addPatient = "INSERT INTO Patients VALUES (?, ?, ?)";
         try {
             PreparedStatement statement = con.prepareStatement(addPatient);
             statement.setString(1, this.username);
@@ -54,15 +54,14 @@ public class Patient {
         }
     }
 
-    // unfinished
     public void searchCaregiverSchedule(Date d) throws SQLException {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();
 
-        String schedule = "SELECT ?";
+        String schedule = "SELECT Username FROM Availabilities WHERE Time = ?";
         try {
             PreparedStatement statement = con.prepareStatement(schedule);
-
+            statement.setDate(1, d);
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new SQLException();
