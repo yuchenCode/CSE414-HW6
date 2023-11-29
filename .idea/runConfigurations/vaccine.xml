@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="vaccine" type="Application" factoryName="Application">
+    <envs>
+      <env name="Server" value="uwseattle" />
+      <env name="DBName" value="hw3db" />
+      <env name="UserID" value="dbadmin" />
+      <env name="Password" value="aA5697888xAa" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="scheduler.Scheduler" />
+    <module name="CSE414-HW6" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

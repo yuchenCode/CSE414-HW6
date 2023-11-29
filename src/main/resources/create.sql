@@ -27,9 +27,9 @@ CREATE TABLE Vaccines (
 
 CREATE TABLE Reservations (
     AppointmentID int IDENTITY,
-    PatientUsername varchar(255) REFERENCES Patients(Username),
-    CaregiverUsername varchar(255) REFERENCES Caregivers(Username),
-    VaccineName varchar(255) REFERENCES Vaccines(Name),
+    PatientUsername varchar(255),
+    CaregiverUsername varchar(255),
+    VaccineName varchar(255),
     AppointmentTime date,
     PRIMARY KEY (AppointmentID),
     FOREIGN KEY (PatientUsername) REFERENCES Patients(Username),
