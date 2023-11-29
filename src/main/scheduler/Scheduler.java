@@ -192,7 +192,7 @@ public class Scheduler {
         // login_patient <username> <password>
         // check 1: if someone's already logged-in, they need to log out first
         if (currentPatient != null || currentCaregiver != null) {
-            System.out.println("Patient already logged in.");
+            System.out.println("User already logged in.");
             return;
         }
         // check 2: the length for tokens need to be exactly 3 to include all information (with the operation name)
@@ -223,7 +223,7 @@ public class Scheduler {
         // login_caregiver <username> <password>
         // check 1: if someone's already logged-in, they need to log out first
         if (currentCaregiver != null || currentPatient != null) {
-            System.out.println("Caregiver already logged in.");
+            System.out.println("User already logged in.");
             return;
         }
         // check 2: the length for tokens need to be exactly 3 to include all information (with the operation name)
@@ -335,6 +335,12 @@ public class Scheduler {
     }
 
     private static void logout(String[] tokens) {
-        // TODO: Part 2
+        if (currentPatient == null && currentCaregiver == null) {
+            System.out.println("No user already logged in");
+        } else {
+            currentPatient = null;
+            currentCaregiver = null;
+            System.out.println("Log out successful!");
+        }
     }
 }
