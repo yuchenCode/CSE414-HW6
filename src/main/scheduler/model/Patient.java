@@ -54,22 +54,6 @@ public class Patient {
         }
     }
 
-    public void searchCaregiverSchedule(Date d) throws SQLException {
-        ConnectionManager cm = new ConnectionManager();
-        Connection con = cm.createConnection();
-
-        String schedule = "SELECT Username FROM Availabilities WHERE Time = ?";
-        try {
-            PreparedStatement statement = con.prepareStatement(schedule);
-            statement.setDate(1, d);
-            statement.executeUpdate();
-        } catch (SQLException e) {
-            throw new SQLException();
-        } finally {
-            cm.closeConnection();
-        }
-    }
-
     // unfinished
     public void reserve(Date d, String vaccine) throws SQLException {
         ConnectionManager cm = new ConnectionManager();

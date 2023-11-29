@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.Arrays;
 
 public class Scheduler {
 
@@ -265,17 +266,37 @@ public class Scheduler {
         String date = tokens[1];
         try {
             Date d = Date.valueOf(date);
-            // unfinished
-            if (currentPatient != null) {
-                currentPatient.searchCaregiverSchedule(d);
-            } else {
-                currentCaregiver.searchCaregiverSchedule(d);
-            }
+            searchSchedule(d);
         } catch (IllegalArgumentException e) {
             System.out.println("Please try again!");
         } catch (SQLException e) {
             System.out.println("Please try again!");
             e.printStackTrace();
+        }
+    }
+
+    private static void searchSchedule(Date d) throws SQLException {
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+
+        String schedule = "SELECT Username FROM Availabilities WHERE Time = ?";
+        String vaccine = "SELECT * FROM Vaccines";
+        try {
+            PreparedStatement scheduleStatement = con.prepareStatement(schedule);
+            PreparedStatement vaccineStatement = con.prepareStatement(vaccine);
+            scheduleStatement.setDate(1, d);
+            ResultSet scheduleResultSet = scheduleStatement.executeQuery();
+            ResultSet vaccineResultSet = vaccineStatement.executeQuery();
+            while (scheduleResultSet.next()) {
+                System.out.println(scheduleResultSet.getString(1));
+            }
+            while (vaccineResultSet.next()) {
+                System.out.println(vaccineResultSet.getString(1) + " " + vaccineResultSet.getInt(2));
+            }
+        } catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            cm.closeConnection();
         }
     }
 
