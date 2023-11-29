@@ -54,6 +54,22 @@ public class Caregiver {
         }
     }
 
+    public void searchCaregiverSchedule(Date d) throws SQLException {
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+
+        String schedule = "SELECT ?";
+        try {
+            PreparedStatement statement = con.prepareStatement(schedule);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            cm.closeConnection();
+        }
+    }
+
     public void uploadAvailability(Date d) throws SQLException {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();

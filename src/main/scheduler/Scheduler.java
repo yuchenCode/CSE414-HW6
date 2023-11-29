@@ -96,14 +96,14 @@ public class Scheduler {
         // create_patient <username> <password>
         // check 1: the length for tokens need to be exactly 3 to include all information (with the operation name)
         if (tokens.length != 3) {
-            System.out.println("Failed to create patient.");
+            System.out.println("Failed to create user.");
             return;
         }
         String username = tokens[1];
         String password = tokens[2];
         // check 2: check if the username has been taken already
         if (usernameExistsPatient(username)) {
-            System.out.println("Patient name taken, try again!");
+            System.out.println("User name taken, try again!");
             return;
         }
         byte[] salt = Util.generateSalt();
@@ -115,7 +115,7 @@ public class Scheduler {
             patient.saveToDB();
             System.out.println("Created patient " + username);
         } catch (SQLException e) {
-            System.out.println("Failed to create patient.");
+            System.out.println("Failed to create user.");
             e.printStackTrace();
         }
     }
@@ -144,14 +144,14 @@ public class Scheduler {
         // create_caregiver <username> <password>
         // check 1: the length for tokens need to be exactly 3 to include all information (with the operation name)
         if (tokens.length != 3) {
-            System.out.println("Failed to create caregiver.");
+            System.out.println("Failed to create user.");
             return;
         }
         String username = tokens[1];
         String password = tokens[2];
         // check 2: check if the username has been taken already
         if (usernameExistsCaregiver(username)) {
-            System.out.println("Caregiver name taken, try again!");
+            System.out.println("User name taken, try again!");
             return;
         }
         byte[] salt = Util.generateSalt();
@@ -163,7 +163,7 @@ public class Scheduler {
             caregiver.saveToDB();
             System.out.println("Created caregiver " + username);
         } catch (SQLException e) {
-            System.out.println("Failed to create caregiver.");
+            System.out.println("Failed to create user.");
             e.printStackTrace();
         }
     }
@@ -251,11 +251,60 @@ public class Scheduler {
     }
 
     private static void searchCaregiverSchedule(String[] tokens) {
-        // TODO: Part 2
+        // searchCaregiverSchedule <date>
+        // check 1: check if the current logged-in user is a patient
+        if (currentPatient == null && currentCaregiver == null) {
+            System.out.println("Please login first!");
+            return;
+        }
+        // check 2: the length for tokens need to be exactly 2 to include all information (with the operation name)
+        if (tokens.length != 2) {
+            System.out.println("Please try again!");
+            return;
+        }
+        String date = tokens[1];
+        try {
+            Date d = Date.valueOf(date);
+            // unfinished
+            if (currentPatient != null) {
+                currentPatient.searchCaregiverSchedule(d);
+            } else {
+                currentCaregiver.searchCaregiverSchedule(d);
+            }
+            System.out.println("Caregiver Schedule Showed!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please enter a valid date!");
+        } catch (SQLException e) {
+            System.out.println("Error occurred when searching caregiver schedule");
+            e.printStackTrace();
+        }
     }
 
     private static void reserve(String[] tokens) {
-        // TODO: Part 2
+        // reserve <date> <vaccine>
+        // check 1: check if the current logged-in user is a patient
+        if (currentPatient == null) {
+            System.out.println("Please login as a patient first!");
+            return;
+        }
+        // check 2: the length for tokens need to be exactly 3 to include all information (with the operation name)
+        if (tokens.length != 3) {
+            System.out.println("Please try again!");
+            return;
+        }
+        String date = tokens[1];
+        String vaccine = tokens[2];
+        try {
+            Date d = Date.valueOf(date);
+            // unfinished
+            currentPatient.reserve(d,vaccine);
+            System.out.println("Vaccine Reserved!");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please enter a valid date!");
+        } catch (SQLException e) {
+            System.out.println("Error occurred when reserving vaccine");
+            e.printStackTrace();
+        }
     }
 
     private static void uploadAvailability(String[] tokens) {

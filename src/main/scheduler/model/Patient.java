@@ -54,16 +54,32 @@ public class Patient {
         }
     }
 
-    // for part 2
-    public void makeReservation(Date d) throws SQLException {
+    // unfinished
+    public void searchCaregiverSchedule(Date d) throws SQLException {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();
 
-        String addReservation = "INSERT INTO Reservations VALUES (? , ?)";
+        String schedule = "SELECT ?";
+        try {
+            PreparedStatement statement = con.prepareStatement(schedule);
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            cm.closeConnection();
+        }
+    }
+
+    // unfinished
+    public void reserve(Date d, String vaccine) throws SQLException {
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+
+        String addReservation = "INSERT INTO Reservations VALUES (?, ?, ?)";
         try {
             PreparedStatement statement = con.prepareStatement(addReservation);
-//            statement.setDate(1, d);
-//            statement.setString(2, this.username);
+
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new SQLException();
