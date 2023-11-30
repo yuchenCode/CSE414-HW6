@@ -281,12 +281,17 @@ public class Scheduler {
 
         String schedule = "SELECT Username FROM Availabilities WHERE Time = ? ORDER BY Username";
         String vaccine = "SELECT * FROM Vaccines";
+
         try {
+            // Check for available schedule
             PreparedStatement scheduleStatement = con.prepareStatement(schedule);
-            PreparedStatement vaccineStatement = con.prepareStatement(vaccine);
             scheduleStatement.setDate(1, d);
             ResultSet scheduleResultSet = scheduleStatement.executeQuery();
+
+            // Check for vaccine availability
+            PreparedStatement vaccineStatement = con.prepareStatement(vaccine);
             ResultSet vaccineResultSet = vaccineStatement.executeQuery();
+
             while (scheduleResultSet.next()) {
                 System.out.println(scheduleResultSet.getString(1));
             }
@@ -303,8 +308,12 @@ public class Scheduler {
     private static void reserve(String[] tokens) {
         // reserve <date> <vaccine>
         // check 1: check if the current logged-in user is a patient
-        if (currentPatient == null) {
-            System.out.println("Please login as a patient first!");
+        if (currentPatient == null && currentCaregiver == null) {
+            System.out.println("Please login first");
+            return;
+        }
+        if (currentCaregiver != null && currentPatient == null) {
+            System.out.println("Please login as a patient!");
             return;
         }
         // check 2: the length for tokens need to be exactly 3 to include all information (with the operation name)
@@ -316,13 +325,11 @@ public class Scheduler {
         String vaccine = tokens[2];
         try {
             Date d = Date.valueOf(date);
-            // unfinished
             currentPatient.reserve(d,vaccine);
-            System.out.println("Vaccine Reserved!");
         } catch (IllegalArgumentException e) {
-            System.out.println("Please enter a valid date!");
+            System.out.println("Please try again!");
         } catch (SQLException e) {
-            System.out.println("Error occurred when reserving vaccine");
+            System.out.println("Please try again");
             e.printStackTrace();
         }
     }

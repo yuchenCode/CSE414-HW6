@@ -54,16 +54,60 @@ public class Patient {
         }
     }
 
-    // unfinished
-    public void reserve(Date d, String vaccine) throws SQLException {
+    public void reserve(Date d, String vac) throws SQLException {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();
 
-        String addReservation = "INSERT INTO Reservations VALUES (?, ?, ?)";
-        try {
-            PreparedStatement statement = con.prepareStatement(addReservation);
+        String schedule = "SELECT Username FROM Availabilities WHERE Time = ? ORDER BY Username";
+        String vaccine = "SELECT Doses FROM Vaccines WHERE Name = ?";
+        String updateAvailability = "DELETE FROM Availabilities WHERE Time = ? AND Username = ?";
+        String updateVaccine = "UPDATE Vaccines SET Doses = Doses - 1 WHERE Name = ?";
+        String insertAppointment = "INSERT INTO Reservations VALUES (?, ?, ?, ?)";
 
-            statement.executeUpdate();
+        try {
+            // Check for available schedule
+            PreparedStatement scheduleStatement = con.prepareStatement(schedule);
+            scheduleStatement.setDate(1, d);
+            ResultSet scheduleResultSet = scheduleStatement.executeQuery();
+
+            // Check for vaccine availability
+            PreparedStatement vaccineStatement = con.prepareStatement(vaccine);
+            vaccineStatement.setString(1, vac);
+            ResultSet vaccineResultSet = vaccineStatement.executeQuery();
+
+            if (!scheduleResultSet.next()) {
+                System.out.println("No Caregiver is Available!");
+            } else if (!vaccineResultSet.next() || vaccineResultSet.getInt(1) < 1) {
+                System.out.println("Not enough available doses!");
+            } else {
+                String caregiverUsername = scheduleResultSet.getString(1);
+
+                // Update caregiver's availability
+                PreparedStatement updateAvailabilityStatement = con.prepareStatement(updateAvailability);
+                updateAvailabilityStatement.setDate(1, d);
+                updateAvailabilityStatement.setString(2, caregiverUsername);
+                updateAvailabilityStatement.executeUpdate();
+
+                // Update vaccine doses
+                PreparedStatement updateVaccineStatement = con.prepareStatement(updateVaccine);
+                updateVaccineStatement.setString(1, vac);
+                updateVaccineStatement.executeUpdate();
+
+                // Create a new appointment
+                PreparedStatement insertAppointmentStatement = con.prepareStatement(insertAppointment, Statement.RETURN_GENERATED_KEYS);
+                insertAppointmentStatement.setString(1, this.getUsername());
+                insertAppointmentStatement.setString(2, caregiverUsername);
+                insertAppointmentStatement.setString(3, vac);
+                insertAppointmentStatement.setDate(4, d);
+                insertAppointmentStatement.executeUpdate();
+
+                // Retrieve and output the appointment ID
+                ResultSet rs = insertAppointmentStatement.getGeneratedKeys();
+                if (rs.next()) {
+                    int appointmentId = rs.getInt(1);
+                    System.out.println("Appointment ID: " + appointmentId + ", Caregiver username: " + caregiverUsername);
+                }
+            }
         } catch (SQLException e) {
             throw new SQLException();
         } finally {
