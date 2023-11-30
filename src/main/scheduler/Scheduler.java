@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
-import java.util.Arrays;
 
 public class Scheduler {
 
@@ -360,8 +359,65 @@ public class Scheduler {
     }
 
     private static void cancel(String[] tokens) {
-        // TODO: Extra credit
+        // cancel <appointment_id>
+        // check 1: check if the user is logged in
+        if (currentPatient == null && currentCaregiver == null) {
+            System.out.println("Please login first!");
+            return;
+        }
+        // check 2: the length for tokens need to be exactly 2 to include all information (with the operation name)
+        if (tokens.length != 2) {
+            System.out.println("Please try again!");
+            return;
+        }
+        int appointmentId;
+        try {
+            appointmentId = Integer.parseInt(tokens[1]);
+            cancelApp(appointmentId);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please try again!");
+        } catch (SQLException e) {
+            System.out.println("Please try again!");
+            e.printStackTrace();
+        }
     }
+
+    private static void cancelApp(int appointmentId) throws SQLException {
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+
+        String checkAppointment = "SELECT PatientUsername, CaregiverUsername, AppointmentTime FROM Reservations WHERE AppointmentID = ?";
+        String deleteAppointment = "DELETE FROM Reservations WHERE AppointmentID = ?";
+        String addAvailability = "INSERT INTO Availabilities (Time, Username) VALUES (?, ?)";
+
+        try {
+            // Check if the appointment is associated with the current user
+            PreparedStatement checkAppointmentStatement = con.prepareStatement(checkAppointment);
+            checkAppointmentStatement.setInt(1, appointmentId);
+            ResultSet rs = checkAppointmentStatement.executeQuery();
+
+            if (!rs.next() || (currentPatient != null && !rs.getString("PatientUsername").equals(currentPatient.getUsername())) && (currentCaregiver != null && !rs.getString("CaregiverUsername").equals(currentCaregiver.getUsername()))) {
+                System.out.println("Appointment not found or not associated with the current user.");
+            } else {
+                // Delete the appointment
+                PreparedStatement deleteAppointmentStatement = con.prepareStatement(deleteAppointment);
+                deleteAppointmentStatement.setInt(1, appointmentId);
+                deleteAppointmentStatement.executeUpdate();
+
+                // Add availability back to the caregiver
+                PreparedStatement addAvailabilityStatement = con.prepareStatement(addAvailability);
+                addAvailabilityStatement.setDate(1, rs.getDate("AppointmentTime"));
+                addAvailabilityStatement.setString(2, rs.getString("CaregiverUsername"));
+                addAvailabilityStatement.executeUpdate();
+                System.out.println("Successfully cancelled appointment.");
+            }
+        } catch (SQLException e) {
+            throw new SQLException();
+        } finally {
+            cm.closeConnection();
+        }
+    }
+
 
     private static void addDoses(String[] tokens) {
         // add_doses <vaccine> <number>
