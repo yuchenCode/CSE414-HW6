@@ -279,7 +279,7 @@ public class Scheduler {
         ConnectionManager cm = new ConnectionManager();
         Connection con = cm.createConnection();
 
-        String schedule = "SELECT Username FROM Availabilities WHERE Time = ?";
+        String schedule = "SELECT Username FROM Availabilities WHERE Time = ? ORDER BY Username";
         String vaccine = "SELECT * FROM Vaccines";
         try {
             PreparedStatement scheduleStatement = con.prepareStatement(schedule);
