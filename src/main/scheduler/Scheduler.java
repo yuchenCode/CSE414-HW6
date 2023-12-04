@@ -291,9 +291,11 @@ public class Scheduler {
             PreparedStatement vaccineStatement = con.prepareStatement(vaccine);
             ResultSet vaccineResultSet = vaccineStatement.executeQuery();
 
+            System.out.println("Available caregivers:");
             while (scheduleResultSet.next()) {
                 System.out.println(scheduleResultSet.getString(1));
             }
+            System.out.println("Available doses:");
             while (vaccineResultSet.next()) {
                 System.out.println(vaccineResultSet.getString(1) + " " + vaccineResultSet.getInt(2));
             }
@@ -508,7 +510,12 @@ public class Scheduler {
                 Date appointmentDate = rs.getDate(3);
                 String otherUsername = rs.getString(4);
 
-                System.out.println(appointmentId + " " + vaccineName + " " + appointmentDate + " " + otherUsername);
+                System.out.print("Appointment ID: " + appointmentId + ", Vaccine Name: " + vaccineName + ", Appointment Date: " + appointmentDate);
+                if (currentPatient != null) {
+                    System.out.println(", Caregiver Name: " + otherUsername);
+                } else {
+                    System.out.println(", Patient Name: " + otherUsername);
+                }
             }
         } catch (SQLException e) {
             throw new SQLException();
